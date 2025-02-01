@@ -32,7 +32,6 @@ const UserRow = ({ user, onUpdateUser }) => {
         updatedUser
       );
 
-      console.log("User updated successfully", response.data);
       setIsEditing(false); // Stop editing after saving
       onUpdateUser(response.data); // Pass the updated user to the parent component
     } catch (error) {

@@ -6,6 +6,8 @@ import { Eye, FileText, Power, PowerOff, Trash2 } from "lucide-react";
 // import QRCode from "qrcode.react";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
+import Shimmer from "./Shimmer";
+import toast from "react-hot-toast";
 
 const Config = () => {
   const [showDeviceNamePopUp, setShowDeviceNamePopUp] = useState(false);
@@ -32,13 +34,13 @@ const Config = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("Device added successfully", data);
+      toast.success("Device added successfully");
       setUrl(data?.webhookUrl);
       queryClient.invalidateQueries(["devices"]);
       handleGenerateQR();
     },
     onError: (error) => {
-      console.error("Error adding device", error);
+      toast.error(error?.response?.data?.message || "Error adding device");
     },
   });
 
@@ -55,28 +57,28 @@ const Config = () => {
     queryKey: ["devices"],
     queryFn: async () => {
       const response = await axiosInstance.get("/admin-and-reseller/devices");
-      // console.log("response", response);
 
       return response?.data?.data;
     },
     onSuccess: (data) => {
-      // console.log("Devices fetched", data);
+      toast.success(data?.message || "Devices fetched successfully");
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Error fetching devices");
     },
   });
 
   const deleteDeviceMutation = useMutation({
     mutationFn: async (id) => {
-      console.log("device id in mutation", id);
-
       const response = await axiosInstance.delete(`/user/delete-device/${id}`);
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("Device deleted successfully", data);
+      toast.success("Device deleted successfully");
       queryClient.invalidateQueries(["devices"]);
     },
     onError: (error) => {
-      console.error("Error delete device", error);
+      toast.error(error?.response?.data?.message || "Error deleting device");
     },
   });
 
@@ -86,19 +88,16 @@ const Config = () => {
   };
 
   if (isLoading) {
-    return <p>Devices loading...</p>;
+    return (
+      <div className="p-6 min-h-[100vh] ">
+        <Shimmer />
+      </div>
+    );
   }
 
-  // console.log("devices", devices);
-
   const handleDeleteCall = (id) => {
-    // console.log("called");
     deleteDeviceMutation.mutate(id);
-    // console.log("device id", id);
   };
-
-  // console.log(devices);
-  // console.log("device webhook url", url);
 
   return (
     <div>

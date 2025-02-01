@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
 import { removeUser } from "../store/userSlice";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const user = useSelector((state) => state?.user?.user);
@@ -23,10 +24,10 @@ const Navbar = () => {
       dispatch(removeUser());
       queryClient.invalidateQueries(["authUser"]);
       navigate("/login", { replace: true });
-      console.log("Logout success", data);
+      toast.success(data?.data?.message || "Logout successful");
     },
     onError: (error) => {
-      console.log("Logout error", error);
+      toast.error(error?.response?.data?.message || "Error logging out");
     },
   });
 
@@ -40,6 +41,9 @@ const Navbar = () => {
               {" "}
               <p className="cursor-pointer">Home</p>{" "}
             </Link>
+            <Link to="dashboard">
+              <p className="cursor-pointer">Users</p>{" "}
+            </Link>
             <Link to="/devices">
               {" "}
               <p className="cursor-pointer">Devices</p>{" "}
@@ -48,7 +52,14 @@ const Navbar = () => {
               {" "}
               <p className="cursor-pointer">Config</p>{" "}
             </Link>
-            <p className="cursor-pointer">Log</p>
+            <Link to="/logs">
+              {" "}
+              <p className="cursor-pointer">Log</p>{" "}
+            </Link>
+            <Link to="/mycampaigns">
+              {" "}
+              <p className="cursor-pointer">My Campaigns</p>{" "}
+            </Link>
           </div>
         )}
         {user?.role == "reseller" && (
@@ -70,7 +81,10 @@ const Navbar = () => {
               {" "}
               <p className="cursor-pointer">Config</p>{" "}
             </Link>
-            <p className="cursor-pointer">Log</p>
+            <Link to="/logs">
+              {" "}
+              <p className="cursor-pointer">Log</p>{" "}
+            </Link>
           </div>
         )}
         {user?.role == "super_admin" && (
@@ -91,12 +105,25 @@ const Navbar = () => {
               {" "}
               <p className="cursor-pointer">Config</p>
             </Link>
-            <p className="cursor-pointer">Log</p>
+            <Link to="/logs">
+              {" "}
+              <p className="cursor-pointer">Log</p>{" "}
+            </Link>
+
+            <Link to="/mycampaigns">
+              {" "}
+              <p className="cursor-pointer"> My Campaigns </p>{" "}
+            </Link>
           </div>
         )}
       </div>
       <div className="flex items-center gap-2">
-        <p>Profile</p>
+        <Link to="/profile">
+          {" "}
+          <p className="cursor-pointer p-2 bg-blue-400 rounded-xl text-white font-semibold ">
+            Profile{" "}
+          </p>{" "}
+        </Link>
         <Button onClick={() => Logout.mutate()}> Logout </Button>{" "}
       </div>
     </nav>

@@ -20,17 +20,20 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderPinwheel } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 const LoginSchema = z.object({
   email: z.string().email("Please enter a valid email").toLowerCase().trim(),
-  password: z.string().min(7, "Password must be at least 8 characters long"),
-  // .regex(
-  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-  //   {
-  //     message:
-  //       "Password must contain at least one uppercase, lowercase, number, and special character",
-  //   }
-  // ),
+  password: z
+    .string()
+    .min(7, "Password must be at least 8 characters long")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      {
+        message:
+          "Password must contain at least one uppercase, lowercase, number, and special character",
+      }
+    ),
   rememberMe: z.boolean().optional(),
 });
 
@@ -54,22 +57,18 @@ const Login = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("signin success", data);
+      toast.success(data?.data?.message || "Login successful");
 
       queryClient.invalidateQueries(["authUser"]);
 
       navigate("/dashboard", { replace: true });
-
-      // navigate("/dashboard");
-      console.log("Navigated to dashboard"); // Should appear in console if navigation is executed.
     },
     onError: (error) => {
-      console.log("error", error);
+      toast.error(error?.response?.data?.message || "Error logging in");
     },
   });
 
   const onSubmit = (data) => {
-    console.log("Form data submitted:", data);
     mutation.mutate(data);
   };
 

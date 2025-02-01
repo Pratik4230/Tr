@@ -18,6 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ConfirmOTPSchema = z.object({
   email: z.string().email("Please enter a valid email").toLowerCase().trim(),
@@ -42,8 +43,6 @@ const ConfirmOTP = () => {
 
   const userEmail = user?.email;
 
-  console.log("user", user);
-
   if (userEmail) {
     email = userEmail;
   }
@@ -66,13 +65,11 @@ const ConfirmOTP = () => {
       return response;
     },
     onSuccess: (data) => {
-      console.log("OTP confirmed and password reset success", data);
-      alert("Your password has been reset successfully!");
+      toast.success("Password reset successfully");
       navigate("/login");
     },
     onError: (error) => {
-      console.error("Failed to reset password:", error);
-      alert("Failed to reset password. Please try again.");
+      toast.error("Failed to reset password. Please try again.");
     },
   });
 
@@ -84,10 +81,7 @@ const ConfirmOTP = () => {
       );
       return response;
     },
-    onSuccess: (data) => {
-      console.log("Password already used", data);
-      alert("Password already used. Please choose a different password.");
-    },
+    onSuccess: (data) => {},
     onError: (error) => {
       console.error("Failed to check password:", error);
       alert("Failed to check password. Please try again.");
@@ -95,7 +89,6 @@ const ConfirmOTP = () => {
   });
 
   const onSubmit = (data) => {
-    console.log("Form Data Submitted: ", data);
     mutation.mutate(data);
 
     isUsedPassword.mutate({

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { axiosInstance } from "./utils/axiosInstance";
 import { addUser, removeUser } from "./store/userSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -16,6 +17,13 @@ import CallLogs from "./pages/CallLogs";
 import Container from "./pages/Container";
 import Devices from "./pages/Devices";
 import Config from "./pages/Config";
+import Campaign from "./pages/Campaign";
+import Logs from "./pages/Logs";
+import Profile from "./pages/Profile";
+import ShowCampaign from "./pages/ShowCampaign";
+import Graphs from "./pages/Graphs";
+
+import Shimmer from "./pages/Shimmer";
 
 function App() {
   const dispatch = useDispatch();
@@ -28,6 +36,9 @@ function App() {
         return response.data;
       } catch (error) {
         console.log("Auth user error", error);
+        toast.error(
+          error.response.data.message || "Unathenticated! Please Login again"
+        );
         if (error.response && error.response.status === 401) {
           return null;
         }
@@ -44,10 +55,12 @@ function App() {
   }, [authUser, dispatch]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="p-6 min-h-[100vh] ">
+        <Shimmer />
+      </div>
+    );
   }
-  // const user = useSelector((state) => state?.user?.user);
-  console.log("authUser", authUser);
 
   return (
     <>
@@ -99,9 +112,29 @@ function App() {
               element={authUser ? <CallLogs /> : <Navigate to="/" />}
             />
 
+            <Route
+              path="/Campaign"
+              element={authUser ? <Campaign /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/logs"
+              element={authUser ? <Logs /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/profile"
+              element={authUser ? <Profile /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/mycampaigns"
+              element={authUser ? <ShowCampaign /> : <Navigate to="/" />}
+            />
+
+            <Route path="/graphs" element={<Graphs />} />
+
             <Route path="*" element={<Navigate to="/" />} />
           </Route>
         </Routes>
+        <Toaster />
       </BrowserRouter>
     </>
   );

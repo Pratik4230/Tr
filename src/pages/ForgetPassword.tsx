@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 
 import { addEmail } from "../store/emailSlice";
 import { Navigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ForgetPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email").toLowerCase().trim(),
@@ -48,21 +49,20 @@ const ForgetPassword = () => {
       return response;
     },
     onSuccess: (data) => {
-      console.log("forgot-password success", data);
+      toast.success(data?.data?.message || "Email sent successfully");
       if (data?.status == 200) {
         dispatch(addEmail(email));
         navigate("/confirmotp");
       }
     },
     onError: (error) => {
-      console.log("forgot-password error", error);
+      toast.error(error?.response?.data?.message || "Error sending email");
     },
   });
 
   const onSubmit = (data) => {
-    console.log("Form Data Submitted email: ", data.email);
     setEmail(data.email);
-    mutation.mutate({ email: data.email });
+    mutation.mutate({ email: data?.email });
   };
 
   return (

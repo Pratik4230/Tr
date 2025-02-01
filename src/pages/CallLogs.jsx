@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { axiosInstance } from "../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 const CallLogs = () => {
   const params = useParams();
@@ -24,7 +25,10 @@ const CallLogs = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("Call logs fetched", data);
+      toast.success(data?.message || "Call logs fetched successfully");
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Error fetching call logs");
     },
   });
 
@@ -80,8 +84,6 @@ const CallLogs = () => {
     };
     return new Intl.DateTimeFormat("en-GB", options).format(date);
   };
-
-  console.log("records per page", recordsPerPage);
 
   return (
     <div className="max-w-5xl mx-auto mt-8">

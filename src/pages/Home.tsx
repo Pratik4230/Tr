@@ -10,6 +10,7 @@ import {
   PhoneOff,
   PhoneOutgoing,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const Home = () => {
   const [filter, setFilter] = useState("30days");
@@ -37,14 +38,18 @@ const Home = () => {
   const { data: callAnalytics, isLoading } = useQuery({
     queryKey: ["callAnalytics", filter, startDate, endDate],
     queryFn: async () => {
-      console.log("filter", filter);
       const response = await axiosInstance.get(
         `user/analytics-calls?filter=${filter}&start_date=${startDate}&end_date=${endDate}`
       );
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("callAnalytics", data);
+      toast.success(data?.message || "Call analytics fetched successfully");
+    },
+    onError: (error) => {
+      toast.error(
+        error?.response?.data?.message || "Error fetching call analytics"
+      );
     },
   });
 

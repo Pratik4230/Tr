@@ -20,6 +20,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderPinwheel } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 // Define the validation schema for the signup form
 const SignupSchema = z.object({
@@ -60,16 +61,15 @@ const Signup = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("signup success", data);
-      navigate("/login", { replace: true });
+      toast.success(data?.data?.message || "Signup successful");
+      navigate("/", { replace: true });
     },
     onError: (error) => {
-      console.log("error", error);
+      toast.error(error?.response?.data?.message || "Error signing up");
     },
   });
 
   const onSubmit = (data) => {
-    console.log("Signup data submitted:", data);
     mutation.mutate(data);
   };
 
